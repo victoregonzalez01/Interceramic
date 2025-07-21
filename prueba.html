@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Calcular materiales</title>
+</head>
+<body style="background-color:red;">
+  <div class="cabecera">
+    <img src="https://interceramic.com/on/demandware.static/Sites-interceramic-Site/-/default/dw3478a94e/images/logo.png" alt="logo interceramic">
+  </div>
+<form id="myForm">
+  <label for="sku">SKU:</label><br>
+  <input type="text" id="sku" name="sku"><br><br>
+  <label for="metross">Metros:</label><br>
+  <input type="text" id="metros" name="metros"><br><br>
+  <button type="button" onclick="mostrarResultados()">Enviar</button>
+</form>
+
+<div id="resultados">
+  <!-- Aquí se mostrarán los resultados -->
+</div>
+
+<script>
+
+
+  // Base de datos de productos (SKU y su rendimiento por caja)
+const productos = {
+  //"SKU": RENDIMIENTO,
+  "168146": 1.44,
+  // Puedes agregar más SKUs aquí según sea necesario
+  // Ejemplo: "123456": 2.50,
+  "137440": {
+    nombre:"PISO ST VINCENT",
+    color: "white",
+    tamaño: "45x90 cm",
+    rendimiento:1.21,
+  imagen: "https://cdn.homedepot.com.mx/productos/137440/137440-a3.jpg",
+  },
+  "115675":1.44,
+  "144125":1.75,
+  "150290":1,
+  "225771":1.44,
+};
+
+function mostrarResultados() {
+  const formulario = document.getElementById("myForm");
+  const formData = new FormData(formulario);
+
+  const sku = formData.get("sku");
+  const metros = parseFloat(formData.get("metros"));
+
+  // Validación
+  if (!sku || isNaN(metros) || metros <= 0) {
+    document.getElementById("resultados").innerHTML =
+      `<div class="error">Error: Ingresa un SKU válido y metros mayores a cero</div>`;
+    return;
+  }
+
+  // Buscar producto
+  const producto = productos[sku];
+
+  if (!producto) {
+    document.getElementById("resultados").innerHTML =
+      `<div class="error">Error: SKU ${sku} no encontrado en la base de datos</div>`;
+    return;
+  }
+
+  // Cálculos
+  const cajasNecesarias = Math.ceil(metros / producto.rendimiento);
+
+
+  // Mostrar resultados detallados
+  document.getElementById("resultados").innerHTML = `
+    <div class="producto-header">
+      <h3>${producto.nombre}</h3>
+      <div class="color-box" style="background-color:${producto.color}"></div>
+    </div>
+
+    <div class="producto-info">
+      <p><strong>SKU:</strong> ${sku}</p>
+      <p><strong>Tamaño:</strong> ${producto.tamaño}</p>
+      <p><strong>Color:</strong> ${producto.color}</p>
+      <p><strong>Rendimiento por caja:</strong> ${producto.rendimiento} m²</p>
+
+    </div>
+
+    <div class="calculos">
+      <p><strong>Metros requeridos:</strong> ${metros} m²</p>
+      <p><strong>Cajas necesarias:</strong> ${cajasNecesarias}</p>
+
+    </div>
+
+    ${producto.imagen ? `<img src="${producto.imagen}" alt="${producto.nombre}" class="producto-img">` : ''}
+  `;
+}
+</script>
+
+<style>
+.resultados-container {
+  border: 1px solid #ddd;
+  padding: 20px;
+  border-radius: 8px;
+  margin-top: 20px;
+  background-color: #f9f9f9;
+}
+
+.error {
+  color: #d32f2f;
+  background-color: #ffebee;
+  padding: 15px;
+  border-radius: 4px;
+  border-left: 4px solid #d32f2f;
+}
+
+.producto-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.color-box {
+  width: 30px;
+  height: 30px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.producto-info {
+  background-color: #fff;
+  padding: 15px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
+
+.calculos {
+  background-color: #e8f5e9;
+  padding: 15px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
+
+.calculos p {
+  margin: 8px 0;
+  font-size: 1.1em;
+}
+
+.producto-img {
+  max-width: 200px;
+  border-radius: 4px;
+  margin-top: 15px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+</style>
+</body>
+</html>
